@@ -2,6 +2,7 @@
 #define RUNTIME_INCLUDES_INTERPRETER_HPP
 
 #include "decoder.hpp"
+#include "executor.hpp"
 
 namespace vm {
 
@@ -12,11 +13,16 @@ class Interpreter final {
 
     [[nodiscard]] static Interpreter *CreateInterpreter();
     static bool Destroy(Interpreter *);
+    VMInstr FetchNext();
+    //TODO: move to VM class
+    bool Run(VMByte* code);
  private:
     Interpreter();
     ~Interpreter();
+    void MovePC();
 
     Decoder* decoder_;
+    Executor* executor_;
 };
 
 } // namespace vm

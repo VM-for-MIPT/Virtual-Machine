@@ -17,8 +17,9 @@ bool Decoder::Destroy(Decoder *decoder) {
     return true;
 }
 
-Instruction Decoder::Decode(uint64_t operation) {
-    return Instruction(); //remove this shit
+Instruction Decoder::Decode(VMInstr operation) {
+    
+    return Instruction();
 }
 
 } // namespace vm 

@@ -3,8 +3,8 @@
 
 namespace vm {
 TEST(InterpreterTest, InterpreterTestInitial) {
-    Interpreter* intrprtr = Interpreter::CreateInterpreter();
-    ASSERT_TRUE(Interpreter::Destroy(intrprtr));
+    Interpreter* inter = Interpreter::CreateInterpreter();
+    ASSERT_TRUE(Interpreter::Destroy(inter));
 }
 
 } // namespace vm
