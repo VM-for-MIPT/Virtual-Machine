@@ -4,6 +4,7 @@
 namespace vm {
 Interpreter::Interpreter() {
     decoder_ = Decoder::CreateDecoder();
+    executor_ = Executor::CreateExecutor();
 }
 Interpreter::~Interpreter() {
     bool success = Decoder::Destroy(decoder_);

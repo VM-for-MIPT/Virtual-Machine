@@ -2,13 +2,9 @@ set(SOURCES
     entry.cpp
 )
 
-set(EXEC_NAME
-  vm
-)
+add_executable(vm ${SOURCES})
 
-add_executable(${EXEC_NAME} ${SOURCES})
-
-add_custom_target(run_${EXEC_NAME}
-    COMMENT Running ${EXEC_NAME}
-    COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${EXEC_NAME}
+add_custom_target(run_vm
+    COMMENT Running VM
+    COMMAND ${CMAKE_CURRENT_BINARY_DIR}/vm
 )
