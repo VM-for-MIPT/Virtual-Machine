@@ -8,6 +8,7 @@ Interpreter::Interpreter() {
 }
 Interpreter::~Interpreter() {
     bool success = Decoder::Destroy(decoder_);
+    success &= Executor::Destroy(executor_);
     assert(success);
 }
 
@@ -21,6 +22,10 @@ bool Interpreter::Destroy(Interpreter *interpreter) {
     assert(interpreter != nullptr);
     delete interpreter;
     return true;
+}
+
+void Run(VMByte* code) {
+    
 }
 
 } // namespace vm 

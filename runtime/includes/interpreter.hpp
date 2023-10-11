@@ -15,7 +15,7 @@ class Interpreter final {
     static bool Destroy(Interpreter *);
     VMInstr FetchNext();
     //TODO: move to VM class
-    bool Run(VMByte* code);
+    void Run(VMByte* code);
  private:
     Interpreter();
     ~Interpreter();
