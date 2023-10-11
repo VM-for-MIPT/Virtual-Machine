@@ -3,6 +3,7 @@
 
 #include "instruction.hpp"
 #include "macros.hpp"
+#include "utils.hpp"
 
 namespace vm {
 class Decoder final {
