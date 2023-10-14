@@ -19,10 +19,11 @@ bool Decoder::Destroy(Decoder *decoder) {
 }
 
 Instruction Decoder::Decode(VMInstr operation) {
-    Opcode opc = static_cast<Opcode>(operation >> 24);
-    RegId_t r = (operation >> 16) & ~(TwoPow<16>() - TwoPow<8>());
-    Immediate_t imm = operation & ((1 << 16) - 1);
+    Opcode opc = static_cast<Opcode>(operation & 7);
+    RegId_t r = ((operation >> 8) & 7);
+    uint32_t upper_value = ((operation >> 16) & 7);
+    uint32_t lower_value = (operation >> 24);
+    Immediate_t imm = (upper_value << 8) + lower_value;
     return {opc, r, imm};
 }
-
 } // namespace vm

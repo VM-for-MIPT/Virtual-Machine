@@ -49,7 +49,10 @@ namespace vm {
         FPRINT = 0x1b,
         SIN = 0x1c,
         COS = 0x1d,
-        POW = 0x1e
+        POW = 0x1e,
+
+        LOAD = 0x1f,     // load immediate to accum
+        MOVE = 0x20      // move from reg2 to reg1
     };
 
 } // namespace vm
