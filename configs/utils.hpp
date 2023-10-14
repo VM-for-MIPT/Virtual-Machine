@@ -22,8 +22,9 @@ constexpr uint64_t TenPow()
     if constexpr (power == 0) {
         return 1;
     }
-
-    return TenPow<power - 1>() * 10;
+    else {
+        return TenPow<power - 1>() * 10;
+    }
 }
 
 template <uint64_t shift, int32_t float_count, uint64_t V>

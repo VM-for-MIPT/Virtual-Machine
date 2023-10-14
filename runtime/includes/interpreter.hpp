@@ -13,13 +13,12 @@ class Interpreter final {
 
     [[nodiscard]] static Interpreter *CreateInterpreter();
     static bool Destroy(Interpreter *);
-    VMInstr FetchNext();
+    VMInstr FetchNext(VMByte* code, VMReg pc);
     //TODO: move to VM class
     void Run(VMByte* code);
  private:
     Interpreter();
     ~Interpreter();
-    void MovePC();
 
     Decoder* decoder_;
     Executor* executor_;

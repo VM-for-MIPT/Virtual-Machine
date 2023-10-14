@@ -14,6 +14,14 @@ bool Executor::Destroy(Executor *executor) {
     return true;
 }
 
+std::array<VMReg, REG_NUM>& Executor::GetRegisters() {
+    return regs_;
+}
+
+std::array<VMFReg, FREG_NUM>& Executor::GetFRegisters() {
+    return fregs_;
+}
+
 // bool Executor::Exec(Instruction instr) {
     
 // }

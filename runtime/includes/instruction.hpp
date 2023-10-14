@@ -2,6 +2,7 @@
 #define RUNTIME_INCLUDES_INSTRUCTION_HPP
 
 #include "types.hpp"
+#include "opcodes.hpp"
 
 /*
          ____opcode____|______________|______________|______________
@@ -24,7 +25,7 @@ struct Instruction final {
         return (opc & INST_TYPE_MASK) >> INST_BIT_NUMBER;
     }
 
-    Opcode_t opc;
+    Opcode opc;
     RegId_t r;
     Immediate_t imm;
 };

@@ -1,6 +1,7 @@
 #ifndef RUNTIME_INCLUDES_EXECUTOR_HPP
 #define RUNTIME_INCLUDES_EXECUTOR_HPP
 
+#include <array>
 #include "executor.hpp"
 #include "instruction.hpp"
 #include "opcodes.hpp"
@@ -17,12 +18,14 @@ class Executor final {
     [[nodiscard]] static Executor *CreateExecutor();
     static bool Destroy(Executor *);
     bool Exec(Instruction);
+    std::array<VMReg, REG_NUM>& GetRegisters();
+    std::array<VMFReg, FREG_NUM>& GetFRegisters();
  private:
     DEFAULT_CTOR(Executor);
     DEFAULT_DESTRCTOR(Executor);
 
-    VMReg regs[REG_NUM];
-    VMFReg fregs[FREG_NUM];
+    std::array<VMReg, REG_NUM> regs_{0};
+    std::array<VMFReg, FREG_NUM> fregs_{0};
 };
 } // namespace vm
 
