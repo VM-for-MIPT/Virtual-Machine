@@ -48,7 +48,8 @@ namespace vm {
         IPRINT = 0x1a,
         FPRINT = 0x1b,
         SIN = 0x1c,
-        COS = 0x1d
+        COS = 0x1d,
+        POW = 0x1e
     };
 
 } // namespace vm
