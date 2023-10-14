@@ -1,5 +1,6 @@
 #include <cassert>
 #include "decoder.hpp"
+#include "opcodes.hpp"
 
 namespace vm {
 Decoder::Decoder() = default;
@@ -18,12 +19,10 @@ bool Decoder::Destroy(Decoder *decoder) {
 }
 
 Instruction Decoder::Decode(VMInstr operation) {
-    Opcode_t opc = operation >> 24;
+    Opcode opc = static_cast<Opcode>(operation >> 24);
     RegId_t r = (operation >> 16) & ~(TwoPow<16>() - TwoPow<8>());
     Immediate_t imm = operation & ((1 << 16) - 1);
-
-    Instruction instr {opc, r, imm};
-    return instr;
+    return {opc, r, imm};
 }
 
 } // namespace vm

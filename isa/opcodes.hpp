@@ -7,7 +7,7 @@ namespace vm {
     constexpr uint32_t INSTR_NUM = 30;
 
     enum Opcode:uint8_t {
-        RESERVED = 0x0,
+        EXIT = 0x0,
 
         // integer
         IADD = 0x1,
