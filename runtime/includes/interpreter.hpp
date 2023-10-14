@@ -1,6 +1,10 @@
 #ifndef RUNTIME_INCLUDES_INTERPRETER_HPP
 #define RUNTIME_INCLUDES_INTERPRETER_HPP
 
+#include <cmath>
+#include <iostream>
+#include <stdexcept>
+
 #include "decoder.hpp"
 #include "executor.hpp"
 
