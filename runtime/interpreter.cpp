@@ -32,7 +32,8 @@ void Interpreter::Run(VMByte* code) {
     static void *dispatch_table[] = {
         &&exit, &&iadd, &&isub, &&imul, &&idiv, &&fadd, &&fsub, &&fmul, &&fdiv, &&and_, &&or_,
         &&xor_, &&eq, &&ne, &&lt, &&le, &&gt, &&ge, &&feq, &&fne, &&flt, &&fle, &&fgt, &&fge,
-        &&iscan, &&fscan, &&iprint, &&fprint, &&sin, &&cos, &&pow, &&load, &&move
+        &&iscan, &&fscan, &&iprint, &&fprint, &&sin, &&cos, &&pow, &&sqrt, &&load, &&move,
+        &&fload, &&fmove
     };
     auto& registers = executor_->GetRegisters();
     auto& fregisters = executor_->GetFRegisters();
@@ -47,44 +48,45 @@ void Interpreter::Run(VMByte* code) {
         goto *dispatch_table[cur_instr->GetInstOpcode()];
 
     exit:
+        delete cur_instr;
         return;
     iadd:
-        registers[Registers::ACCUM] = registers[cur_instr->r] + cur_instr->imm;
+        registers[Registers::ACCUM] = registers[cur_instr->r] + registers[cur_instr->GetR2()];
         NEXT();
     isub:
-        registers[Registers::ACCUM] = registers[cur_instr->r] - cur_instr->imm;
+        registers[Registers::ACCUM] = registers[cur_instr->r] - registers[cur_instr->GetR2()];
         NEXT();
     imul:
-        registers[Registers::ACCUM] = registers[cur_instr->r] * cur_instr->imm;
+        registers[Registers::ACCUM] = registers[cur_instr->r] * registers[cur_instr->GetR2()];
         NEXT();
     idiv:
         try {
-            auto left = cur_instr->imm;
-            if(left == 0) {
+            auto right = registers[cur_instr->GetR2()];
+            if(right == 0) {
                 throw std::runtime_error("Division by zero error.");
             }
-            registers[Registers::ACCUM] = static_cast<int64_t>(registers[cur_instr->r] / left);
+            registers[Registers::ACCUM] = static_cast<int64_t>(registers[cur_instr->r] / right);
         }
         catch (const std::runtime_error &e) {
             std::cerr << e.what() << std::endl;
         }
         NEXT();
     fadd:
-        fregisters[FRegisters::FACCUM] = fregisters[cur_instr->r] + cur_instr->imm;
+        fregisters[FRegisters::FACCUM] = fregisters[cur_instr->r] + fregisters[cur_instr->GetR2()];
         NEXT();
     fsub:
-        fregisters[FRegisters::FACCUM] = fregisters[cur_instr->r] - cur_instr->imm;
+        fregisters[FRegisters::FACCUM] = fregisters[cur_instr->r] - fregisters[cur_instr->GetR2()];
         NEXT();
     fmul:
-        fregisters[FRegisters::FACCUM] = fregisters[cur_instr->r] * cur_instr->imm;
+        fregisters[FRegisters::FACCUM] = fregisters[cur_instr->r] * fregisters[cur_instr->GetR2()];
         NEXT();
     fdiv:
         try{
-            auto left = cur_instr->imm;
-            if(std::fpclassify(left) == FP_ZERO) {
+            auto right = fregisters[cur_instr->GetR2()];
+            if(std::fpclassify(right) == FP_ZERO) {
                 throw std::runtime_error("Division by zero error.");
             }
-            fregisters[FRegisters::FACCUM] = fregisters[cur_instr->r] / left;
+            fregisters[FRegisters::FACCUM] = fregisters[cur_instr->r] / right;
         }
         catch (const std::runtime_error &e) {
             std::cerr << e.what() << std::endl;
@@ -136,16 +138,16 @@ void Interpreter::Run(VMByte* code) {
         
         NEXT();
     iscan:
-        scanf("%ld", &registers[cur_instr->r]);
+        scanf("%ld", &registers[Registers::ACCUM]);
         NEXT();
     fscan:
-        scanf("%lf", &fregisters[cur_instr->r]);
+        scanf("%lf", &fregisters[FRegisters::FACCUM]);
         NEXT();
     iprint:
-        printf("%ld", registers[cur_instr->r]);
+        printf("%ld\n", registers[cur_instr->r]);
         NEXT();
     fprint:
-        printf("%lf", fregisters[cur_instr->r]);
+        printf("%lf\n", fregisters[cur_instr->r]);
         NEXT();
     sin: // arguments are only put to float registers
         fregisters[FRegisters::FACCUM] = std::sin(fregisters[cur_instr->r]);
@@ -156,11 +158,20 @@ void Interpreter::Run(VMByte* code) {
     pow: // arguments are only put to float registers
         fregisters[FRegisters::FACCUM] = std::pow(fregisters[cur_instr->r], cur_instr->imm);
         NEXT();
+    sqrt: // arguments are only put to float registers
+        fregisters[FRegisters::FACCUM] = std::sqrt(fregisters[cur_instr->r]);
+        NEXT();
     load:
-        // To be implemented
+        registers[Registers::ACCUM] = cur_instr->imm;
         NEXT();
     move:
-        // To be implemented
+        registers[cur_instr->r] = registers[cur_instr->GetR2()];
+        NEXT();
+    fload:
+        fregisters[FRegisters::FACCUM] = cur_instr->imm;
+        NEXT();
+    fmove:
+        fregisters[cur_instr->r] = fregisters[cur_instr->GetR2()];
         NEXT();
 }
 

@@ -50,9 +50,13 @@ namespace vm {
         SIN = 0x1c,
         COS = 0x1d,
         POW = 0x1e,
+        SQRT = 0x1f,
 
-        LOAD = 0x1f,     // load immediate to accum
-        MOVE = 0x20      // move from reg2 to reg1
+        LOAD = 0x20,     // load immediate to accum
+        MOVE = 0x21,     // move from reg2 to reg1
+
+        FLOAD = 0x22,    // load immediate to faccum
+        FMOVE = 0x23,    // move from freg2 to freg1
     };
 
 } // namespace vm
