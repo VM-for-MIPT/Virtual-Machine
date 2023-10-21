@@ -32,19 +32,19 @@ void Interpreter::Run(VMByte* code) {
     static void *dispatch_table[] = {
         &&exit, &&iadd, &&isub, &&imul, &&idiv, &&fadd, &&fsub, &&fmul, &&fdiv, &&and_, &&or_,
         &&xor_, &&eq, &&ne, &&lt, &&le, &&gt, &&ge, &&feq, &&fne, &&flt, &&fle, &&fgt, &&fge,
-        &&iscan, &&fscan, &&iprint, &&fprint, &&sin, &&cos, &&pow
+        &&iscan, &&fscan, &&iprint, &&fprint, &&sin, &&cos, &&pow, &&load, &&move
     };
     auto& registers = executor_->GetRegisters();
     auto& fregisters = executor_->GetFRegisters();
     VMReg& pc = registers[20];
     Instruction* cur_instr = new Instruction;
     *cur_instr = decoder_->Decode(FetchNext(code, pc));
-    goto *dispatch_table[cur_instr->GetInstId()];
+    goto *dispatch_table[cur_instr->GetInstOpcode()];
 
     #define NEXT() \
         pc += 4; \
         *cur_instr = decoder_->Decode(FetchNext(code, pc));\
-        goto *dispatch_table[cur_instr->GetInstId()];
+        goto *dispatch_table[cur_instr->GetInstOpcode()];
 
     exit:
         return;
@@ -155,6 +155,12 @@ void Interpreter::Run(VMByte* code) {
         NEXT();
     pow: // arguments are only put to float registers
         fregisters[FRegisters::FACCUM] = std::pow(fregisters[cur_instr->r], cur_instr->imm);
+        NEXT();
+    load:
+        // To be implemented
+        NEXT();
+    move:
+        // To be implemented
         NEXT();
 }
 

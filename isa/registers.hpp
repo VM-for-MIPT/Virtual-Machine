@@ -30,8 +30,7 @@ namespace vm {
         R17 = 0x11,
         R18 = 0x12,
         R19 = 0x13,
-        R20 = 0x14, // PC
-
+        R20 = 0x14 // PC
     };
 
     enum FRegisters:uint8_t {
@@ -50,7 +49,7 @@ namespace vm {
         D11 = 0xb,
         D12 = 0xc,
         D13 = 0xd,
-        D14 = 0xe,
+        D14 = 0xe
     };
 
 } // namespace vm

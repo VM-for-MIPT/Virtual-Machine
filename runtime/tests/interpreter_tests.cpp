@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "interpreter.hpp"
+#include "inst_creator_inl.hpp"
 
 namespace vm {
 TEST(InterpreterTest, InterpreterTestInitial) {

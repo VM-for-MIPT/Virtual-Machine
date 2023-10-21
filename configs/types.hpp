@@ -13,7 +13,7 @@ using InstrId_t = uint8_t;
 using TypeId_t = uint8_t;
 using RegId_t = uint8_t;
 using Opcode_t = uint8_t;
-using Immediate_t = int64_t;
+using Immediate_t = int16_t;
 } // namespace vm
 
 #endif // CONFIGS_TYPES_HPP
