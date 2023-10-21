@@ -11,3 +11,4 @@ target_include_directories(runtime PUBLIC
                            ${PROJECT_SOURCE_DIR}/isa)
 
 add_subdirectory(tests)
+add_subdirectory(usability_check)

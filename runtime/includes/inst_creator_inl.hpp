@@ -1,9 +1,15 @@
+#include <cassert>
+
 #include "instruction.hpp"
 #include "types.hpp"
 
 //TODO: autogenerate this
 
 namespace vm {
+VMInstr EXITGen() {
+    return 0;
+}
+
 VMInstr IADDGen(uint32_t reg_id, uint32_t imm) {
     VMInstr val = 0;
     val |= Opcode::IADD;
@@ -158,17 +164,15 @@ VMInstr FGEGen() {
     return 0;
 }
 
-VMInstr ISCANGen(uint32_t reg_id) {
+VMInstr ISCANGen() {
     VMInstr val = 0;
     val |= Opcode::ISCAN;
-    val |= (reg_id << 8);
     return val;
 }
 
-VMInstr FSCANGen(uint32_t reg_id) {
+VMInstr FSCANGen() {
     VMInstr val = 0;
     val |= Opcode::FSCAN;
-    val |= (reg_id << 8);
     return val;
 }
 
@@ -190,7 +194,8 @@ VMInstr SINGen(uint32_t reg_id, uint32_t imm) {
     VMInstr val = 0;
     val |= Opcode::SIN;
     val |= (reg_id << 8);
-    val |= (imm << 16);
+    val |= ((imm >> 8) & (TwoPow<8>() - 1)) << 16;
+    val |= (imm & (TwoPow<8>() - 1)) << 24;
     return val;
 }
 
@@ -198,7 +203,8 @@ VMInstr COSGen(uint32_t reg_id, uint32_t imm) {
     VMInstr val = 0;
     val |= Opcode::COS;
     val |= (reg_id << 8);
-    val |= (imm << 16);
+    val |= ((imm >> 8) & (TwoPow<8>() - 1)) << 16;
+    val |= (imm & (TwoPow<8>() - 1)) << 24;
     return val;
 }
 
@@ -206,20 +212,46 @@ VMInstr POWGen(uint32_t reg_id, uint32_t imm) {
     VMInstr val = 0;
     val |= Opcode::POW;
     val |= (reg_id << 8);
-    val |= (imm << 16);
+    val |= ((imm >> 8) & (TwoPow<8>() - 1)) << 16;
+    val |= (imm & (TwoPow<8>() - 1)) << 24;
     return val;
 }
 
-VMInstr LOADGen(int32_t imm) {
+VMInstr SQRTGen(uint32_t reg_id) {
+    VMInstr val = 0;
+    val |= Opcode::SQRT;
+    val |= (reg_id << 8);
+    return val;
+}
+
+VMInstr LOADGen(uint32_t imm) {
     VMInstr val = 0;
     val |= Opcode::LOAD;
-    val |= (imm << 16);
+    val |= ((imm >> 8) & (TwoPow<8>() - 1)) << 16;
+    val |= (imm & (TwoPow<8>() - 1)) << 24;
     return val;
 }
 
-VMInstr MOVEGen(int32_t reg1_id, int32_t reg2_id) {
+VMInstr MOVEGen(uint32_t reg1_id, uint32_t reg2_id) {
     VMInstr val = 0;
     val |= Opcode::MOVE;
+    val |= (reg1_id << 8);
+    val |= (reg2_id << 16);
+    return val;
+}
+
+VMInstr FLOADGen(uint32_t imm) {
+    assert(imm < TwoPow<16>());
+    VMInstr val = 0;
+    val |= Opcode::FLOAD;
+    val |= ((imm >> 8) & (TwoPow<8>() - 1)) << 16;
+    val |= (imm & (TwoPow<8>() - 1)) << 24;
+    return val;
+}
+
+VMInstr FMOVEGen(uint32_t reg1_id, uint32_t reg2_id) {
+    VMInstr val = 0;
+    val |= Opcode::FMOVE;
     val |= (reg1_id << 8);
     val |= (reg2_id << 16);
     return val;

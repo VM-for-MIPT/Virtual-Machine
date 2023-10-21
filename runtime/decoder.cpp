@@ -19,9 +19,9 @@ bool Decoder::Destroy(Decoder *decoder) {
 }
 
 Instruction Decoder::Decode(VMInstr operation) {
-    Opcode opc = static_cast<Opcode>(operation & 7);
-    RegId_t r = ((operation >> 8) & 7);
-    uint32_t upper_value = ((operation >> 16) & 7);
+    Opcode opc = static_cast<Opcode>(operation & (TwoPow<8>() - 1));
+    RegId_t r = ((operation >> 8) & (TwoPow<8>() - 1));
+    uint32_t upper_value = ((operation >> 16) & (TwoPow<8>() - 1));
     uint32_t lower_value = (operation >> 24);
     Immediate_t imm = (upper_value << 8) + lower_value;
     return {opc, r, imm};
