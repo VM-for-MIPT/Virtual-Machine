@@ -13,10 +13,12 @@
 
 namespace vm {
 struct Instruction final {
-    RegId_t GetR2() {
+    RegId_t GetR2()
+    {
         return (imm >> 8);
     }
-    Opcode GetInstOpcode() {
+    Opcode GetInstOpcode()
+    {
         return opc;
     }
 
@@ -25,6 +27,6 @@ struct Instruction final {
     Immediate_t imm;
 };
 
-} // namespace vm
+}  // namespace vm
 
-#endif // RUNTIME_INCLUDES_INSTRUCTION_HPP
+#endif  // RUNTIME_INCLUDES_INSTRUCTION_HPP

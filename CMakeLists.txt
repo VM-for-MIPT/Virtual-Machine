@@ -23,6 +23,12 @@ if (NOT INSTALL_RES EQUAL 0)
 	message(FATAL_ERROR "Unable to install required third-party dependencies")
 endif()
 
+add_custom_target(
+	run_clang_format
+	COMMENT Run clang-format
+	COMMAND ${Python3_EXECUTABLE} ${PROJECT_SCRIPTS}/run_clang_format.py ${PROJECT_ROOT}
+)
+
 add_subdirectory(entry)
 add_subdirectory(runtime)
 add_subdirectory(${PROJECT_THIRD_PARTY}/googletest)

@@ -7,17 +7,18 @@
 
 namespace vm {
 class Decoder final {
- public:
+public:
     NO_COPY_SEMANTIC(Decoder);
     NO_MOVE_SEMANTIC(Decoder);
 
     [[nodiscard]] static Decoder *CreateDecoder();
     static bool Destroy(Decoder *decoder);
     Instruction Decode(VMInstr operation);
- private:
+
+private:
     Decoder();
     ~Decoder();
 };
-} // namespace vm
+}  // namespace vm
 
-#endif // RUNTIME_INCLUDES_DECODER_HPP
+#endif  // RUNTIME_INCLUDES_DECODER_HPP

@@ -3,12 +3,13 @@
 #include "inst_creator_inl.hpp"
 
 namespace vm {
-TEST(InterpreterTest, InterpreterTestInitial) {
-    Interpreter* inter = Interpreter::CreateInterpreter();
+TEST(InterpreterTest, InterpreterTestInitial)
+{
+    Interpreter *inter = Interpreter::CreateInterpreter();
     ASSERT_TRUE(Interpreter::Destroy(inter));
 }
 
-} // namespace vm
+}  // namespace vm
 
 int main(int argc, char *argv[])
 {

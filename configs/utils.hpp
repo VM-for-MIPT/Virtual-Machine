@@ -21,8 +21,7 @@ constexpr uint64_t TenPow()
     static_assert(power >= 0, "Power must be non-negative");
     if constexpr (power == 0) {
         return 1;
-    }
-    else {
+    } else {
         return TenPow<power - 1>() * 10;
     }
 }
@@ -94,6 +93,6 @@ inline void *ToVoidPtr(uintptr_t ptr)
 {
     return reinterpret_cast<void *>(ptr);
 }
-} // namespace vm
+}  // namespace vm
 
 #endif  // CONFIGS_UTILS_HPP
