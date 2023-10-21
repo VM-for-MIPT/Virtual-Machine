@@ -11,22 +11,23 @@
 
 namespace vm {
 class Executor final {
- public:
+public:
     NO_COPY_SEMANTIC(Executor);
     NO_MOVE_SEMANTIC(Executor);
 
     [[nodiscard]] static Executor *CreateExecutor();
     static bool Destroy(Executor *);
     bool Exec(Instruction);
-    std::array<VMReg, REG_NUM>& GetRegisters();
-    std::array<VMFReg, FREG_NUM>& GetFRegisters();
- private:
+    std::array<VMReg, REG_NUM> &GetRegisters();
+    std::array<VMFReg, FREG_NUM> &GetFRegisters();
+
+private:
     DEFAULT_CTOR(Executor);
     DEFAULT_DESTRCTOR(Executor);
 
-    std::array<VMReg, REG_NUM> regs_{0};
-    std::array<VMFReg, FREG_NUM> fregs_{0};
+    std::array<VMReg, REG_NUM> regs_ {0};
+    std::array<VMFReg, FREG_NUM> fregs_ {0};
 };
-} // namespace vm
+}  // namespace vm
 
-#endif //RUNTIME_INCLUDES_EXECUTOR_HPP
+#endif  // RUNTIME_INCLUDES_EXECUTOR_HPP

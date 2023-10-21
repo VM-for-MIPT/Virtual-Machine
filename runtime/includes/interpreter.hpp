@@ -11,23 +11,24 @@
 namespace vm {
 
 class Interpreter final {
- public:
+public:
     NO_COPY_SEMANTIC(Interpreter);
     NO_MOVE_SEMANTIC(Interpreter);
 
     [[nodiscard]] static Interpreter *CreateInterpreter();
     static bool Destroy(Interpreter *);
-    VMInstr FetchNext(VMByte* code, VMReg pc);
-    //TODO: move to VM class
-    void Run(VMByte* code);
- private:
+    VMInstr FetchNext(VMByte *code, VMReg pc);
+    // TODO: move to VM class
+    void Run(VMByte *code);
+
+private:
     Interpreter();
     ~Interpreter();
 
-    Decoder* decoder_;
-    Executor* executor_;
+    Decoder *decoder_;
+    Executor *executor_;
 };
 
-} // namespace vm
+}  // namespace vm
 
-#endif //RUNTIME_INCLUDES_INTERPRETER_HPP
+#endif  // RUNTIME_INCLUDES_INTERPRETER_HPP

@@ -3,14 +3,16 @@
 #include "instruction.hpp"
 #include "types.hpp"
 
-//TODO: autogenerate this
+// TODO: autogenerate this
 
 namespace vm {
-VMInstr EXITGen() {
+VMInstr EXITGen()
+{
     return 0;
 }
 
-VMInstr IADDGen(uint32_t reg_id, uint32_t imm) {
+VMInstr IADDGen(uint32_t reg_id, uint32_t imm)
+{
     VMInstr val = 0;
     val |= Opcode::IADD;
     val |= (reg_id << 8);
@@ -18,7 +20,8 @@ VMInstr IADDGen(uint32_t reg_id, uint32_t imm) {
     return val;
 }
 
-VMInstr ISUBGen(uint32_t reg_id, uint32_t imm) {
+VMInstr ISUBGen(uint32_t reg_id, uint32_t imm)
+{
     VMInstr val = 0;
     val |= Opcode::ISUB;
     val |= (reg_id << 8);
@@ -26,7 +29,8 @@ VMInstr ISUBGen(uint32_t reg_id, uint32_t imm) {
     return val;
 }
 
-VMInstr IMULGen(uint32_t reg_id, uint32_t imm) {
+VMInstr IMULGen(uint32_t reg_id, uint32_t imm)
+{
     VMInstr val = 0;
     val |= Opcode::IMUL;
     val |= (reg_id << 8);
@@ -34,7 +38,8 @@ VMInstr IMULGen(uint32_t reg_id, uint32_t imm) {
     return val;
 }
 
-VMInstr IDIVGen(uint32_t reg_id, uint32_t imm) {
+VMInstr IDIVGen(uint32_t reg_id, uint32_t imm)
+{
     VMInstr val = 0;
     val |= Opcode::IDIV;
     val |= (reg_id << 8);
@@ -42,7 +47,8 @@ VMInstr IDIVGen(uint32_t reg_id, uint32_t imm) {
     return val;
 }
 
-VMInstr FADDGen(uint32_t reg_id, uint32_t imm) {
+VMInstr FADDGen(uint32_t reg_id, uint32_t imm)
+{
     VMInstr val = 0;
     val |= Opcode::FADD;
     val |= (reg_id << 8);
@@ -50,7 +56,8 @@ VMInstr FADDGen(uint32_t reg_id, uint32_t imm) {
     return val;
 }
 
-VMInstr FSUBGen(uint32_t reg_id, uint32_t imm) {
+VMInstr FSUBGen(uint32_t reg_id, uint32_t imm)
+{
     VMInstr val = 0;
     val |= Opcode::FSUB;
     val |= (reg_id << 8);
@@ -58,7 +65,8 @@ VMInstr FSUBGen(uint32_t reg_id, uint32_t imm) {
     return val;
 }
 
-VMInstr FMULGen(uint32_t reg_id, uint32_t imm) {
+VMInstr FMULGen(uint32_t reg_id, uint32_t imm)
+{
     VMInstr val = 0;
     val |= Opcode::FMUL;
     val |= (reg_id << 8);
@@ -66,7 +74,8 @@ VMInstr FMULGen(uint32_t reg_id, uint32_t imm) {
     return val;
 }
 
-VMInstr FDIVGen(uint32_t reg_id, uint32_t imm) {
+VMInstr FDIVGen(uint32_t reg_id, uint32_t imm)
+{
     VMInstr val = 0;
     val |= Opcode::FDIV;
     val |= (reg_id << 8);
@@ -74,7 +83,8 @@ VMInstr FDIVGen(uint32_t reg_id, uint32_t imm) {
     return val;
 }
 
-VMInstr ANDGen(uint32_t reg_id, uint32_t imm) {
+VMInstr ANDGen(uint32_t reg_id, uint32_t imm)
+{
     VMInstr val = 0;
     val |= Opcode::AND;
     val |= (reg_id << 8);
@@ -82,7 +92,8 @@ VMInstr ANDGen(uint32_t reg_id, uint32_t imm) {
     return val;
 }
 
-VMInstr ORGen(uint32_t reg_id, uint32_t imm) {
+VMInstr ORGen(uint32_t reg_id, uint32_t imm)
+{
     VMInstr val = 0;
     val |= Opcode::OR;
     val |= (reg_id << 8);
@@ -90,7 +101,8 @@ VMInstr ORGen(uint32_t reg_id, uint32_t imm) {
     return val;
 }
 
-VMInstr XORGen(uint32_t reg_id, uint32_t imm) {
+VMInstr XORGen(uint32_t reg_id, uint32_t imm)
+{
     VMInstr val = 0;
     val |= Opcode::XOR;
     val |= (reg_id << 8);
@@ -98,7 +110,8 @@ VMInstr XORGen(uint32_t reg_id, uint32_t imm) {
     return val;
 }
 
-VMInstr EQGen(uint32_t reg_id, uint32_t imm) {
+VMInstr EQGen(uint32_t reg_id, uint32_t imm)
+{
     VMInstr val = 0;
     val |= Opcode::EQ;
     val |= (reg_id << 8);
@@ -106,7 +119,8 @@ VMInstr EQGen(uint32_t reg_id, uint32_t imm) {
     return val;
 }
 
-VMInstr NEGen(uint32_t reg_id, uint32_t imm) {
+VMInstr NEGen(uint32_t reg_id, uint32_t imm)
+{
     VMInstr val = 0;
     val |= Opcode::NE;
     val |= (reg_id << 8);
@@ -114,83 +128,98 @@ VMInstr NEGen(uint32_t reg_id, uint32_t imm) {
     return val;
 }
 
-VMInstr LTGen() {
+VMInstr LTGen()
+{
     // to be implemented
     return 0;
 }
 
-VMInstr LEGen() {
+VMInstr LEGen()
+{
     // to be implemented
     return 0;
 }
 
-VMInstr GTGen() {
+VMInstr GTGen()
+{
     // to be implemented
     return 0;
 }
 
-VMInstr GEGen() {
+VMInstr GEGen()
+{
     // to be implemented
     return 0;
 }
 
-VMInstr FEQGen() {
+VMInstr FEQGen()
+{
     // to be implemented
     return 0;
 }
 
-VMInstr FNEGen() {
+VMInstr FNEGen()
+{
     // to be implemented
     return 0;
 }
 
-VMInstr FLTGen() {
+VMInstr FLTGen()
+{
     // to be implemented
     return 0;
 }
 
-VMInstr FLEGen() {
+VMInstr FLEGen()
+{
     // to be implemented
     return 0;
 }
 
-VMInstr FGTGen() {
+VMInstr FGTGen()
+{
     // to be implemented
     return 0;
 }
 
-VMInstr FGEGen() {
+VMInstr FGEGen()
+{
     // to be implemented
     return 0;
 }
 
-VMInstr ISCANGen() {
+VMInstr ISCANGen()
+{
     VMInstr val = 0;
     val |= Opcode::ISCAN;
     return val;
 }
 
-VMInstr FSCANGen() {
+VMInstr FSCANGen()
+{
     VMInstr val = 0;
     val |= Opcode::FSCAN;
     return val;
 }
 
-VMInstr IPRINTGen(uint32_t reg_id) {
+VMInstr IPRINTGen(uint32_t reg_id)
+{
     VMInstr val = 0;
     val |= Opcode::IPRINT;
     val |= (reg_id << 8);
     return val;
 }
 
-VMInstr FPRINTGen(uint32_t reg_id) {
+VMInstr FPRINTGen(uint32_t reg_id)
+{
     VMInstr val = 0;
     val |= Opcode::FPRINT;
     val |= (reg_id << 8);
     return val;
 }
 
-VMInstr SINGen(uint32_t reg_id, uint32_t imm) {
+VMInstr SINGen(uint32_t reg_id, uint32_t imm)
+{
     VMInstr val = 0;
     val |= Opcode::SIN;
     val |= (reg_id << 8);
@@ -199,7 +228,8 @@ VMInstr SINGen(uint32_t reg_id, uint32_t imm) {
     return val;
 }
 
-VMInstr COSGen(uint32_t reg_id, uint32_t imm) {
+VMInstr COSGen(uint32_t reg_id, uint32_t imm)
+{
     VMInstr val = 0;
     val |= Opcode::COS;
     val |= (reg_id << 8);
@@ -208,7 +238,8 @@ VMInstr COSGen(uint32_t reg_id, uint32_t imm) {
     return val;
 }
 
-VMInstr POWGen(uint32_t reg_id, uint32_t imm) {
+VMInstr POWGen(uint32_t reg_id, uint32_t imm)
+{
     VMInstr val = 0;
     val |= Opcode::POW;
     val |= (reg_id << 8);
@@ -217,14 +248,16 @@ VMInstr POWGen(uint32_t reg_id, uint32_t imm) {
     return val;
 }
 
-VMInstr SQRTGen(uint32_t reg_id) {
+VMInstr SQRTGen(uint32_t reg_id)
+{
     VMInstr val = 0;
     val |= Opcode::SQRT;
     val |= (reg_id << 8);
     return val;
 }
 
-VMInstr LOADGen(uint32_t imm) {
+VMInstr LOADGen(uint32_t imm)
+{
     VMInstr val = 0;
     val |= Opcode::LOAD;
     val |= ((imm >> 8) & (TwoPow<8>() - 1)) << 16;
@@ -232,7 +265,8 @@ VMInstr LOADGen(uint32_t imm) {
     return val;
 }
 
-VMInstr MOVEGen(uint32_t reg1_id, uint32_t reg2_id) {
+VMInstr MOVEGen(uint32_t reg1_id, uint32_t reg2_id)
+{
     VMInstr val = 0;
     val |= Opcode::MOVE;
     val |= (reg1_id << 8);
@@ -240,7 +274,8 @@ VMInstr MOVEGen(uint32_t reg1_id, uint32_t reg2_id) {
     return val;
 }
 
-VMInstr FLOADGen(uint32_t imm) {
+VMInstr FLOADGen(uint32_t imm)
+{
     assert(imm < TwoPow<16>());
     VMInstr val = 0;
     val |= Opcode::FLOAD;
@@ -249,11 +284,12 @@ VMInstr FLOADGen(uint32_t imm) {
     return val;
 }
 
-VMInstr FMOVEGen(uint32_t reg1_id, uint32_t reg2_id) {
+VMInstr FMOVEGen(uint32_t reg1_id, uint32_t reg2_id)
+{
     VMInstr val = 0;
     val |= Opcode::FMOVE;
     val |= (reg1_id << 8);
     val |= (reg2_id << 16);
     return val;
 }
-} // namespace vm
+}  // namespace vm
