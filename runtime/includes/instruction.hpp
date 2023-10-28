@@ -2,7 +2,6 @@
 #define RUNTIME_INCLUDES_INSTRUCTION_HPP
 
 #include "types.hpp"
-#include "opcodes.hpp"
 
 /*
          _____________|_____________|_____________|_____________
@@ -10,6 +9,8 @@
              8 bits       8 bits        8 bits        8 bits
               num        num/reg2         reg1        opcode
 */
+
+enum Opcode : uint8_t;
 
 namespace vm {
 struct Instruction final {
@@ -26,7 +27,6 @@ struct Instruction final {
     RegId_t r;
     Immediate_t imm;
 };
-
 }  // namespace vm
 
 #endif  // RUNTIME_INCLUDES_INSTRUCTION_HPP

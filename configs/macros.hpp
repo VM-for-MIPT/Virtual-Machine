@@ -4,6 +4,7 @@
 #define DEFAULT_CTOR(TypeName) TypeName() = default;
 #define DEFAULT_DESTRCTOR(TypeName) ~TypeName() = default;
 #define NO_DEFAULT_CTOR(TypeName) TypeName() = delete;
+#define NO_DEFAULT_DESTRCTOR(TypeName) ~TypeName() = delete;
 #define NO_COPY_CTOR(TypeName) TypeName(const TypeName &) = delete;
 #define NO_COPY_OPERATOR(TypeName) void operator=(const TypeName &) = delete;
 #define NO_MOVE_CTOR(TypeName) TypeName(TypeName &&) = delete;

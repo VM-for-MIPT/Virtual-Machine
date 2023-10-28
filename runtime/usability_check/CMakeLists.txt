@@ -9,7 +9,8 @@ target_link_libraries(${QUADR_EXEC_NAME} runtime)
 
 target_include_directories(${QUADR_EXEC_NAME} PUBLIC
                           ${PROJECT_SOURCE_DIR}/runtime/includes
-                          ${PROJECT_SOURCE_DIR}/configs)
+                          ${PROJECT_SOURCE_DIR}/configs
+                          ${PROJECT_BINARY_DIR}/gen)
 
 add_custom_target(
     run_${QUADR_EXEC_NAME}
