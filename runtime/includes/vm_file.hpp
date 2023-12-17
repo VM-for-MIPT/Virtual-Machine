@@ -11,7 +11,7 @@ namespace vm {
 class VMFile final {
 public:
     NO_DEFAULT_CTOR(VMFile);
-    DEFAULT_DESTRCTOR(VMFile);  // Should code_ be freed here?
+    DEFAULT_DESTRCTOR(VMFile);
     explicit VMFile(VMByte *runnable_code, std::vector<std::tuple<Types, size_t, void *>> const_pool)
         : code_(runnable_code), const_pool_(const_pool)
     {

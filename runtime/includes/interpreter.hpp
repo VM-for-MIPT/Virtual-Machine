@@ -3,9 +3,7 @@
 
 #include <cmath>
 #include <stdexcept>
-
 #include "decoder.hpp"
-#include "executor.hpp"
 #include "vm_file.hpp"
 
 namespace vm {
@@ -26,7 +24,6 @@ private:
     ~Interpreter();
 
     Decoder *decoder_;
-    Executor *executor_;
     VMFile *vm_file_;
 };
 }  // namespace vm
