@@ -1,0 +1,234 @@
+EXIT:
+  info: "Exit of the program"
+  opcode: 0
+  fields_shifts:
+
+IADD:
+  info: "Adds one i64 integer in r1 to another in r2 and writes to accum"
+  opcode: 1
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+ISUB:
+  info: "Subtracts one i64 integer in r1 from another in r2 and writes to accum"
+  opcode: 2
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+IMUL:
+  info: "Multiplies one i64 integer in r1 by another in r2 and writes to accum"
+  opcode: 3
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+IDIV:
+  info: "Divides one i64 integer in r1 by another in r2 and writes to accum"
+  opcode: 4
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+FADD:
+  info: "Adds one double in r1 to another in r2 and writes to accum"
+  opcode: 5
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+FSUB:
+  info: "Subtracts one double in r1 from another in r2 and writes to accum"
+  opcode: 6
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+FMUL:
+  info: "Multiplies one double in r1 by another in r2 and writes to accum"
+  opcode: 7
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+FDIV:
+  info: "Divides one double in r1 by another in r2 and writes to accum"
+  opcode: 8
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+AND:
+  info: "Does r1 & r2 and writes result to accum"
+  opcode: 9
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+OR:
+  info: "Does r1 | r2 and writes result to accum"
+  opcode: 10
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+XOR:
+  info: "Does r1 & r2 and writes result to accum"
+  opcode: 11
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+EQ:
+  info: "Checks if r1 == r2 and writes result (0 or 1) to accum"
+  opcode: 12
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+NE:
+  info: "Opposite to EQ"
+  opcode: 13
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+LT:
+  info: "Checks if r1 < r2 and writes result (0 or 1) to accum"
+  opcode: 14
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+LE:
+  info: "Checks if r1 <= r2 and writes result (0 or 1) to accum"
+  opcode: 15
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+GT:
+  info: "Checks if r1 > r2 and writes result (0 or 1) to accum"
+  opcode: 16
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+GE:
+  info: "Checks if r1 >= r2 and writes result (0 or 1) to accum"
+  opcode: 17
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+FEQ:
+  info: "Checks if r1 == r2 (doubles) and writes result (0 or 1) to accum"
+  opcode: 18
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+FNE:
+  info: "Opposite to FEQ"
+  opcode: 19
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+FLT:
+  info: "Checks if r1 < r2 (doubles) and writes result (0 or 1) to accum"
+  opcode: 20
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+FLE:
+  info: "Checks if r1 <= r2 (doubles) and writes result (0 or 1) to accum"
+  opcode: 21
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+FGT:
+  info: "Checks if r1 > r2 (doubles) and writes result (0 or 1) to accum"
+  opcode: 22
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+FGE:
+  info: "Checks if r1 >= r2 (doubles) and writes result (0 or 1) to accum"
+  opcode: 23
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+ISCAN:
+  info: "Input of integer value (64 bits) stored in r1"
+  opcode: 24
+  fields_shifts:
+
+FSCAN:
+  info: "Input of float value (64 bits) stored in r1"
+  opcode: 25
+  fields_shifts:
+
+IPRINT:
+  info: "Print of integer value (64 bits) stored in r1"
+  opcode: 26
+  fields_shifts:
+    r1: 8
+
+FPRINT:
+  info: "Print of float value (64 bits) stored in r1"
+  opcode: 27
+  fields_shifts:
+    r1: 8
+
+SIN:
+  info: "Math sine. Writes result to accum"
+  opcode: 28
+  fields_shifts:
+    r1: 8
+
+COS:
+  info: "Math cosine. Writes result to accum"
+  opcode: 29
+  fields_shifts:
+    r1: 8
+
+POW:
+  info: "Math pow. Power value is in imm. Writes result to accum"
+  opcode: 30
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+LOAD:
+  info: "Load const imm to r1"
+  opcode: 31
+  fields_shifts:
+    r1: 8
+    imm: 16
+
+MOVE:
+  info: "Move value from r1 to r2"
+  opcode: 32
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+FLOAD:
+  info: "Load const imm to r1"
+  opcode: 33
+  fields_shifts:
+    r1: 8
+    imm: 16
+
+FMOVE:
+  info: "Move value from r1 to r2"
+  opcode: 34
+  fields_shifts:
+    r1: 8
+    r2: 16

@@ -1,23 +1,23 @@
+#include <iostream>
 #include <cassert>
 #include "interpreter.hpp"
 
 namespace vm {
-Interpreter::Interpreter()
+Interpreter::Interpreter(VMFile *vm_file) : vm_file_(vm_file)
 {
     decoder_ = Decoder::CreateDecoder();
     executor_ = Executor::CreateExecutor();
 }
 Interpreter::~Interpreter()
 {
-    bool success = Decoder::Destroy(decoder_);
-    success &= Executor::Destroy(executor_);
+    [[maybe_unused]] bool success = Decoder::Destroy(decoder_) & Executor::Destroy(executor_);
     assert(success);
 }
 
 /* static */
-Interpreter *Interpreter::CreateInterpreter()
+Interpreter *Interpreter::CreateInterpreter(VMFile *vm_file)
 {
-    return new Interpreter;
+    return new Interpreter(vm_file);
 }
 
 /* static */
@@ -33,12 +33,13 @@ VMInstr Interpreter::FetchNext(VMByte *code, VMReg pc)
     return *reinterpret_cast<VMInstr *>(&code[pc]);
 }
 
-void Interpreter::Run(VMByte *code)
+void Interpreter::Run()
 {
+    VMByte *code = vm_file_->GetCode();
     static void *dispatch_table[] = {&&exit,   &&iadd, &&isub, &&imul, &&idiv, &&fadd, &&fsub,  &&fmul,  &&fdiv,
                                      &&and_,   &&or_,  &&xor_, &&eq,   &&ne,   &&lt,   &&le,    &&gt,    &&ge,
                                      &&feq,    &&fne,  &&flt,  &&fle,  &&fgt,  &&fge,  &&iscan, &&fscan, &&iprint,
-                                     &&fprint, &&sin,  &&cos,  &&pow,  &&sqrt, &&load, &&move,  &&fload, &&fmove};
+                                     &&fprint, &&sin,  &&cos,  &&pow,  &&load, &&move, &&fload, &&fmove};
     auto &registers = executor_->GetRegisters();
     auto &fregisters = executor_->GetFRegisters();
     VMReg &pc = registers[20];
@@ -72,6 +73,7 @@ idiv:
         registers[Registers::ACCUM] = static_cast<int64_t>(registers[cur_instr->r] / right);
     } catch (const std::runtime_error &e) {
         std::cerr << e.what() << std::endl;
+        std::abort();
     }
     NEXT();
 fadd:
@@ -92,52 +94,53 @@ fdiv:
         fregisters[FRegisters::FACCUM] = fregisters[cur_instr->r] / right;
     } catch (const std::runtime_error &e) {
         std::cerr << e.what() << std::endl;
+        std::abort();
     }
     NEXT();
 and_:
-
+    assert(false);  // Not implemented
     NEXT();
 or_:
-
+    assert(false);  // Not implemented
     NEXT();
 xor_:
-
+    assert(false);  // Not implemented
     NEXT();
 eq:
-
+    assert(false);  // Not implemented
     NEXT();
 ne:
-
+    assert(false);  // Not implemented
     NEXT();
 lt:
-
+    assert(false);  // Not implemented
     NEXT();
 le:
-
+    assert(false);  // Not implemented
     NEXT();
 gt:
-
+    assert(false);  // Not implemented
     NEXT();
 ge:
-
+    assert(false);  // Not implemented
     NEXT();
 feq:
-
+    assert(false);  // Not implemented
     NEXT();
 fne:
-
+    assert(false);  // Not implemented
     NEXT();
 flt:
-
+    assert(false);  // Not implemented
     NEXT();
 fle:
-
+    assert(false);  // Not implemented
     NEXT();
 fgt:
-
+    assert(false);  // Not implemented
     NEXT();
 fge:
-
+    assert(false);  // Not implemented
     NEXT();
 iscan:
     scanf("%ld", &registers[Registers::ACCUM]);
@@ -158,19 +161,16 @@ cos:  // arguments are only put to float registers
     fregisters[FRegisters::FACCUM] = std::cos(fregisters[cur_instr->r]);
     NEXT();
 pow:  // arguments are only put to float registers
-    fregisters[FRegisters::FACCUM] = std::pow(fregisters[cur_instr->r], cur_instr->imm);
-    NEXT();
-sqrt:  // arguments are only put to float registers
-    fregisters[FRegisters::FACCUM] = std::sqrt(fregisters[cur_instr->r]);
+    fregisters[FRegisters::FACCUM] = std::pow(fregisters[cur_instr->r], fregisters[cur_instr->GetR2()]);
     NEXT();
 load:
-    registers[Registers::ACCUM] = cur_instr->imm;
+    registers[cur_instr->r] = vm_file_->GetConst<int>(cur_instr->imm);
     NEXT();
 move:
     registers[cur_instr->r] = registers[cur_instr->GetR2()];
     NEXT();
 fload:
-    fregisters[FRegisters::FACCUM] = cur_instr->imm;
+    fregisters[cur_instr->r] = vm_file_->GetConst<double>(cur_instr->imm);
     NEXT();
 fmove:
     fregisters[cur_instr->r] = fregisters[cur_instr->GetR2()];

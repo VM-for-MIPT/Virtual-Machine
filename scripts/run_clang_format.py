@@ -2,7 +2,7 @@ import sys
 import os
 import re
 
-PROGRAM = "clang-format-10"
+PROGRAM = "clang-format"
 
 def get_filtered_files(root_dir) :
 	default_ignored_paths = ['build', 'third-party']

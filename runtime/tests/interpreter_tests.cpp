@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 #include "interpreter.hpp"
-#include "inst_creator_inl.hpp"
+#include "instr_opcode.gen.hpp"
 
 namespace vm {
 TEST(InterpreterTest, InterpreterTestInitial)
 {
-    Interpreter *inter = Interpreter::CreateInterpreter();
+    Interpreter *inter = Interpreter::CreateInterpreter(nullptr);
     ASSERT_TRUE(Interpreter::Destroy(inter));
 }
 

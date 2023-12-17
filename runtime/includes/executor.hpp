@@ -4,7 +4,6 @@
 #include <array>
 #include "executor.hpp"
 #include "instruction.hpp"
-#include "opcodes.hpp"
 #include "macros.hpp"
 #include "registers.hpp"
 #include "types.hpp"

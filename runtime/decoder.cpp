@@ -1,6 +1,5 @@
 #include <cassert>
 #include "decoder.hpp"
-#include "opcodes.hpp"
 
 namespace vm {
 Decoder::Decoder() = default;
