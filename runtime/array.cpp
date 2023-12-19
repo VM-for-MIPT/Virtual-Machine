@@ -1,15 +1,18 @@
 #include "array.hpp"
 
 namespace vm {
+Array::Array() = default;
+Array::~Array() = default;
+
 /* static */
-Array *Array::CreateArray(size_t size, void *mem)
+Array* Array::CreateArray(void* mem, size_t size)
 {
-    auto arr = new Array(size, mem);
+    Array* arr = new (mem) Array;
     return arr;
 }
 
 /* static */
-bool Array::Destroy(Array *array)
+static bool Array::Destroy(Array *array)
 {
     assert(array != nullptr);
     delete array;
@@ -19,6 +22,15 @@ bool Array::Destroy(Array *array)
 size_t Array::GetOffsetByIdx(int idx)
 {
     return idx * KlassWord_;
+}
+
+int Array::GetValueByIdx(int idx) {
+  return *(ptr_ + GetOffsetByIdx(idx));
+}
+
+int Array::SetValueByIdx(int value, int idx) {
+  auto idx_pointer = ptr_ + GetOffsetByIdx(idx);
+  *idx_pointer = value;
 }
 
 }  // namespace vm

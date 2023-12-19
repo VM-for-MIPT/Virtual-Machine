@@ -3,6 +3,7 @@
 #include "interpreter.hpp"
 #include "frame.hpp"
 #include "registers.hpp"
+#include "array.hpp"
 
 namespace vm {
 using mem::Frame;
@@ -45,10 +46,12 @@ void Interpreter::Run()
     assert(frame != nullptr);
     assert(Frame::GetFrames()->size() != 0);
     VMReg *pc = ToNativePtr<VMReg>(frame->GetRegPtr(20));
+    void* cur_arr_ptr = nullptr;
     static void *dispatch_table[] = {&&exit,   &&iadd, &&isub, &&imul, &&idiv, &&fadd, &&fsub,  &&fmul,  &&fdiv,
                                      &&and_,   &&or_,  &&xor_, &&eq,   &&ne,   &&lt,   &&le,    &&gt,    &&ge,
                                      &&feq,    &&fne,  &&flt,  &&fle,  &&fgt,  &&fge,  &&iscan, &&fscan, &&iprint,
-                                     &&fprint, &&sin,  &&cos,  &&pow,  &&load, &&move, &&fload, &&fmove};
+                                     &&fprint, &&sin,  &&cos,  &&pow,  &&load, &&move, &&fload, &&fmove, &&newarrint,
+                                     /*&&strarrint, &&ldarrint*/};
 
     Instruction *cur_instr = new Instruction;
     *cur_instr = decoder_->Decode(FetchNext(code, *pc));
@@ -194,24 +197,21 @@ move:
     *ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->r)) = *ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->GetR2()));
     NEXT();
 fload:
-    *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)) = vm_file_->GetConst<double>(cur_instr->imm);
+    *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)) = vm_file_->GetConst<VMFReg>(cur_instr->imm);
     NEXT();
 fmove:
     *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)) = *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->GetR2()));
     NEXT();
 newarrint:  // array of integers
-    Array arr(Frames::GetCurrent()->GetFreeMemPtr(), sizeof(int32_t));
-    registers[Registers::ACCUM] = reinterpret_cast<int64_t>(&arr);
+    arr_ptr = Frame::GetCurrent()->GetFreeMemPtr(vm_file_->GetConst<VMReg>(cur_instr->imm));
+    Arvray=vm::Array::CreateArray(arr_ptr, sizeof(VMReg));
+    *ToNativePtr<VMReg>(frame->GetRegPtr(Registers::ACCUM)) = reinterpret_cast<VMReg> (&arr_ptr);
     NEXT();
 strarrint:
-    arr_ptr = registers[cur_instr->r];
-    arr_idx = registers[cur_instr->GetR2()];
-    arr_ptr->SetValueByIdx(arr_idx);
+    arr_ptr->SetValueByIdx(*ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->r)), *ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->GetR2())));
     NEXT();
 ldarrint:
-    arr_ptr = registers[cur_instr->r];
-    arr_idx = registers[cur_instr->GetR2()];
-    arr_ptr->GetValueByIdx(arr_idx);
+    *ToNativePtr<VMReg>(frame->GetRegPtr(Registers::ACCUM)) = arr_ptr->GetValueByIdx(*ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->r)));
     NEXT();
 }
 
