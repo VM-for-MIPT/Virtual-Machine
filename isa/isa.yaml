@@ -232,3 +232,15 @@ FMOVE:
   fields_shifts:
     r1: 8
     r2: 16
+
+CALL:
+  info: "Calling method by offset at imm with number of args r1"
+  opcode: 35
+  fields_shifts:
+    r1: 8
+    imm: 16
+
+RET:
+  info: "Returning to previous frame from func call"
+  opcode: 36
+  fields_shifts:

@@ -45,20 +45,20 @@ void Interpreter::Run()
     auto frame = Frame::GetCurrent();
     assert(frame != nullptr);
     assert(Frame::GetFrames()->size() != 0);
-    VMReg *pc = ToNativePtr<VMReg>(frame->GetRegPtr(20));
-    static void *dispatch_table[] = {&&exit,  &&iadd,  &&isub,   &&imul,   &&idiv,      &&fadd,      &&fsub,    &&fmul,
-                                     &&fdiv,  &&and_,  &&or_,    &&xor_,   &&eq,        &&ne,        &&lt,      &&le,
-                                     &&gt,    &&ge,    &&feq,    &&fne,    &&flt,       &&fle,       &&fgt,     &&fge,
-                                     &&iscan, &&fscan, &&iprint, &&fprint, &&sin,       &&cos,       &&pow,     &&load,
-                                     &&move,  &&fload, &&fmove,  &&call,   &&newarrint, &&strarrint, &&ldarrint};
+    VMReg pc = *ToNativePtr<VMReg>(frame->GetRegPtr(20));
+    static void *dispatch_table[] = {
+        &&exit, &&iadd, &&isub, &&imul,  &&idiv,  &&fadd,  &&fsub,   &&fmul,      &&fdiv,      &&and_,
+        &&or_,  &&xor_, &&eq,   &&ne,    &&lt,    &&le,    &&gt,     &&ge,        &&feq,       &&fne,
+        &&flt,  &&fle,  &&fgt,  &&fge,   &&iscan, &&fscan, &&iprint, &&fprint,    &&sin,       &&cos,
+        &&pow,  &&load, &&move, &&fload, &&fmove, &&call,  &&ret,    &&newarrint, &&strarrint, &&ldarrint};
 
     Instruction *cur_instr = new Instruction;
-    *cur_instr = decoder_->Decode(FetchNext(code, *pc));
+    *cur_instr = decoder_->Decode(FetchNext(code, pc));
     goto *dispatch_table[cur_instr->GetInstOpcode()];
 
-#define NEXT()                                           \
-    *pc += 4;                                            \
-    *cur_instr = decoder_->Decode(FetchNext(code, *pc)); \
+#define NEXT()                                          \
+    pc += 4;                                            \
+    *cur_instr = decoder_->Decode(FetchNext(code, pc)); \
     goto *dispatch_table[cur_instr->GetInstOpcode()];
 
 exit:
@@ -206,7 +206,19 @@ call:
     size_t num_of_args = *ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->r));
     void *prev_fr_mem = frame->GetRawMem();
     frame = Frame::CreateNew();
-    frame->SetUpForCall(num_of_args, jump_offset, *pc, prev_fr_mem);
+    frame->SetUpForCall(num_of_args, jump_offset, pc, prev_fr_mem);
+    // changing pc
+    pc += jump_offset;
+
+    NEXT();
+ret:
+    auto result = *ToNativePtr<VMReg>(frame->GetRegPtr(Registers::ACCUM));
+    frame = Frame::DeleteLast();
+    assert(frame != nullptr);
+    // restoring pc
+    pc = *ToNativePtr<VMReg>(frame->GetRegPtr(20));
+    // saving result to the current accum
+    *ToNativePtr<VMReg>(frame->GetRegPtr(Registers::ACCUM)) = result;
     NEXT();
 newarrint:
     auto arr_ptr = Frame::GetCurrent()->GetFreeMemPtr(vm_file_->GetConst<VMReg>(cur_instr->imm));
