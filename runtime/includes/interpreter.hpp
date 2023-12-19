@@ -17,7 +17,7 @@ public:
     static bool Destroy(Interpreter *);
     VMInstr FetchNext(VMByte *code, VMReg pc);
     // TODO: move to VM class
-    void Run();
+    void Run(size_t entrypoint);
 
 private:
     Interpreter(VMFile *vm_file);
