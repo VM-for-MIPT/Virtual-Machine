@@ -199,6 +199,20 @@ fload:
 fmove:
     *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)) = *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->GetR2()));
     NEXT();
+newarrint:  // array of integers
+    Array arr(Frames::GetCurrent()->GetFreeMemPtr(), sizeof(int32_t));
+    registers[Registers::ACCUM] = reinterpret_cast<int64_t>(&arr);
+    NEXT();
+strarrint:
+    arr_ptr = registers[cur_instr->r];
+    arr_idx = registers[cur_instr->GetR2()];
+    arr_ptr->SetValueByIdx(arr_idx);
+    NEXT();
+ldarrint:
+    arr_ptr = registers[cur_instr->r];
+    arr_idx = registers[cur_instr->GetR2()];
+    arr_ptr->GetValueByIdx(arr_idx);
+    NEXT();
 }
 
 }  // namespace vm

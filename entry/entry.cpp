@@ -1,11 +1,11 @@
 namespace vm {
-int Main(int argc, const char **argv)
+int Main()
 {
     return 0;
 }
 }  // namespace vm
 
-int main(int argc, const char **argv)
+int main()
 {
-    return vm::Main(argc, argv);
+    return vm::Main();
 }
