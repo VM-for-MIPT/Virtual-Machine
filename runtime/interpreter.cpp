@@ -16,6 +16,7 @@ Interpreter::~Interpreter()
 {
     [[maybe_unused]] bool success = Decoder::Destroy(decoder_);
     assert(success);
+    delete vm_file_;
 }
 
 /* static */
@@ -37,7 +38,7 @@ VMInstr Interpreter::FetchNext(VMByte *code, VMReg pc)
     return *reinterpret_cast<VMInstr *>(&code[pc]);
 }
 
-void Interpreter::Run()
+void Interpreter::Run(size_t entrypoint)
 {
     VMByte *code = vm_file_->GetCode();
     assert(Frame::GetFrames()->size() == 0);
@@ -45,7 +46,7 @@ void Interpreter::Run()
     auto frame = Frame::GetCurrent();
     assert(frame != nullptr);
     assert(Frame::GetFrames()->size() != 0);
-    VMReg pc = *ToNativePtr<VMReg>(frame->GetRegPtr(20));
+    VMReg pc = entrypoint;
     static void *dispatch_table[] = {
         &&exit, &&iadd, &&isub, &&imul,  &&idiv,  &&fadd,  &&fsub,   &&fmul,      &&fdiv,      &&and_,
         &&or_,  &&xor_, &&eq,   &&ne,    &&lt,    &&le,    &&gt,     &&ge,        &&feq,       &&fne,
@@ -92,17 +93,17 @@ idiv:
     }
     NEXT();
 fadd:
-    *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::FACCUM)) =
+    *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::ACCUM)) =
         *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)) +
         *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->GetR2()));
     NEXT();
 fsub:
-    *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::FACCUM)) =
+    *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::ACCUM)) =
         *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)) -
         *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->GetR2()));
     NEXT();
 fmul:
-    *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::FACCUM)) =
+    *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::ACCUM)) =
         *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)) *
         *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->GetR2()));
     NEXT();
@@ -112,7 +113,7 @@ fdiv:
         if (std::fpclassify(right) == FP_ZERO) {
             throw std::runtime_error("Division by zero error.");
         }
-        *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::FACCUM)) =
+        *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::ACCUM)) =
             *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)) / right;
     } catch (const std::runtime_error &e) {
         std::cerr << e.what() << std::endl;
@@ -168,7 +169,7 @@ iscan:
     scanf("%ld", ToNativePtr<VMReg>(frame->GetRegPtr(Registers::ACCUM)));
     NEXT();
 fscan:
-    scanf("%lf", ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::FACCUM)));
+    scanf("%lf", ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::ACCUM)));
     NEXT();
 iprint:
     printf("%ld\n", *ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->r)));
@@ -177,15 +178,15 @@ fprint:
     printf("%lf\n", *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)));
     NEXT();
 sin:  // arguments are only put to float registers
-    *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::FACCUM)) =
+    *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::ACCUM)) =
         std::sin(*ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)));
     NEXT();
 cos:  // arguments are only put to float registers
-    *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::FACCUM)) =
+    *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::ACCUM)) =
         std::cos(*ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)));
     NEXT();
 pow:  // arguments are only put to float registers
-    *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::FACCUM)) =
+    *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::ACCUM)) =
         std::pow(*ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)),
                  *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->GetR2())));
     NEXT();
@@ -204,21 +205,22 @@ fmove:
 call:
     int64_t jump_offset = vm_file_->GetConst<VMReg>(cur_instr->imm);
     size_t num_of_args = *ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->r));
+    *ToNativePtr<VMReg>(frame->GetRegPtr(20)) = pc;  // saving pc to return
     void *prev_fr_mem = frame->GetRawMem();
     frame = Frame::CreateNew();
     frame->SetUpForCall(num_of_args, jump_offset, pc, prev_fr_mem);
     // changing pc
-    pc += jump_offset;
+    pc = pc + jump_offset - 4;  // -4 because NEXT() adds 4
 
     NEXT();
 ret:
-    auto result = *ToNativePtr<VMReg>(frame->GetRegPtr(Registers::ACCUM));
+    VMFReg result = *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::ACCUM));
     frame = Frame::DeleteLast();
     assert(frame != nullptr);
     // restoring pc
     pc = *ToNativePtr<VMReg>(frame->GetRegPtr(20));
     // saving result to the current accum
-    *ToNativePtr<VMReg>(frame->GetRegPtr(Registers::ACCUM)) = result;
+    *ToNativePtr<VMReg>(frame->GetRegPtr(Registers::ACCUM)) = *ToNativePtr<VMReg>(&result);
     NEXT();
 newarrint:
     auto arr_ptr = Frame::GetCurrent()->GetFreeMemPtr(vm_file_->GetConst<VMReg>(cur_instr->imm));
