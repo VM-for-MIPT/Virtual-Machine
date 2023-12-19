@@ -1,7 +1,7 @@
 set(SOURCES
     decoder.cpp
-    executor.cpp
     interpreter.cpp
+    mem/frame.cpp
 )
 
 add_library(runtime STATIC ${SOURCES})

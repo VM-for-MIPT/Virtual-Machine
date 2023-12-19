@@ -1,16 +1,19 @@
 #include <iostream>
 #include <cassert>
 #include "interpreter.hpp"
+#include "frame.hpp"
+#include "registers.hpp"
 
 namespace vm {
+using mem::Frame;
+
 Interpreter::Interpreter(VMFile *vm_file) : vm_file_(vm_file)
 {
     decoder_ = Decoder::CreateDecoder();
-    executor_ = Executor::CreateExecutor();
 }
 Interpreter::~Interpreter()
 {
-    [[maybe_unused]] bool success = Decoder::Destroy(decoder_) & Executor::Destroy(executor_);
+    [[maybe_unused]] bool success = Decoder::Destroy(decoder_);
     assert(success);
 }
 
@@ -36,62 +39,79 @@ VMInstr Interpreter::FetchNext(VMByte *code, VMReg pc)
 void Interpreter::Run()
 {
     VMByte *code = vm_file_->GetCode();
+    assert(Frame::GetFrames()->size() == 0);
+    Frame::CreateNew();
+    auto frame = Frame::GetCurrent();
+    assert(frame != nullptr);
+    assert(Frame::GetFrames()->size() != 0);
+    VMReg *pc = ToNativePtr<VMReg>(frame->GetRegPtr(20));
     static void *dispatch_table[] = {&&exit,   &&iadd, &&isub, &&imul, &&idiv, &&fadd, &&fsub,  &&fmul,  &&fdiv,
                                      &&and_,   &&or_,  &&xor_, &&eq,   &&ne,   &&lt,   &&le,    &&gt,    &&ge,
                                      &&feq,    &&fne,  &&flt,  &&fle,  &&fgt,  &&fge,  &&iscan, &&fscan, &&iprint,
                                      &&fprint, &&sin,  &&cos,  &&pow,  &&load, &&move, &&fload, &&fmove};
-    auto &registers = executor_->GetRegisters();
-    auto &fregisters = executor_->GetFRegisters();
-    VMReg &pc = registers[20];
+
     Instruction *cur_instr = new Instruction;
-    *cur_instr = decoder_->Decode(FetchNext(code, pc));
+    *cur_instr = decoder_->Decode(FetchNext(code, *pc));
     goto *dispatch_table[cur_instr->GetInstOpcode()];
 
-#define NEXT()                                          \
-    pc += 4;                                            \
-    *cur_instr = decoder_->Decode(FetchNext(code, pc)); \
+#define NEXT()                                           \
+    *pc += 4;                                            \
+    *cur_instr = decoder_->Decode(FetchNext(code, *pc)); \
     goto *dispatch_table[cur_instr->GetInstOpcode()];
 
 exit:
+    Frame::DeleteLast();
+    assert(Frame::GetFrames()->size() == 0);  // expecting all frames to be freed before exit
     delete cur_instr;
     return;
 iadd:
-    registers[Registers::ACCUM] = registers[cur_instr->r] + registers[cur_instr->GetR2()];
+    *ToNativePtr<VMReg>(frame->GetRegPtr(Registers::ACCUM)) =
+        *ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->r)) + *ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->GetR2()));
     NEXT();
 isub:
-    registers[Registers::ACCUM] = registers[cur_instr->r] - registers[cur_instr->GetR2()];
+    *ToNativePtr<VMReg>(frame->GetRegPtr(Registers::ACCUM)) =
+        *ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->r)) - *ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->GetR2()));
     NEXT();
 imul:
-    registers[Registers::ACCUM] = registers[cur_instr->r] * registers[cur_instr->GetR2()];
+    *ToNativePtr<VMReg>(frame->GetRegPtr(Registers::ACCUM)) =
+        *ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->r)) * *ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->GetR2()));
     NEXT();
 idiv:
     try {
-        auto right = registers[cur_instr->GetR2()];
+        auto right = *ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->GetR2()));
         if (right == 0) {
             throw std::runtime_error("Division by zero error.");
         }
-        registers[Registers::ACCUM] = static_cast<int64_t>(registers[cur_instr->r] / right);
+        *ToNativePtr<VMReg>(frame->GetRegPtr(Registers::ACCUM)) =
+            static_cast<int64_t>(*ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->r)) / right);
     } catch (const std::runtime_error &e) {
         std::cerr << e.what() << std::endl;
         std::abort();
     }
     NEXT();
 fadd:
-    fregisters[FRegisters::FACCUM] = fregisters[cur_instr->r] + fregisters[cur_instr->GetR2()];
+    *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::FACCUM)) =
+        *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)) +
+        *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->GetR2()));
     NEXT();
 fsub:
-    fregisters[FRegisters::FACCUM] = fregisters[cur_instr->r] - fregisters[cur_instr->GetR2()];
+    *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::FACCUM)) =
+        *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)) -
+        *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->GetR2()));
     NEXT();
 fmul:
-    fregisters[FRegisters::FACCUM] = fregisters[cur_instr->r] * fregisters[cur_instr->GetR2()];
+    *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::FACCUM)) =
+        *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)) *
+        *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->GetR2()));
     NEXT();
 fdiv:
     try {
-        auto right = fregisters[cur_instr->GetR2()];
+        auto right = *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->GetR2()));
         if (std::fpclassify(right) == FP_ZERO) {
             throw std::runtime_error("Division by zero error.");
         }
-        fregisters[FRegisters::FACCUM] = fregisters[cur_instr->r] / right;
+        *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::FACCUM)) =
+            *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)) / right;
     } catch (const std::runtime_error &e) {
         std::cerr << e.what() << std::endl;
         std::abort();
@@ -143,37 +163,41 @@ fge:
     assert(false);  // Not implemented
     NEXT();
 iscan:
-    scanf("%ld", &registers[Registers::ACCUM]);
+    scanf("%ld", ToNativePtr<VMReg>(frame->GetRegPtr(Registers::ACCUM)));
     NEXT();
 fscan:
-    scanf("%lf", &fregisters[FRegisters::FACCUM]);
+    scanf("%lf", ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::FACCUM)));
     NEXT();
 iprint:
-    printf("%ld\n", registers[cur_instr->r]);
+    printf("%ld\n", *ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->r)));
     NEXT();
 fprint:
-    printf("%lf\n", fregisters[cur_instr->r]);
+    printf("%lf\n", *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)));
     NEXT();
 sin:  // arguments are only put to float registers
-    fregisters[FRegisters::FACCUM] = std::sin(fregisters[cur_instr->r]);
+    *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::FACCUM)) =
+        std::sin(*ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)));
     NEXT();
 cos:  // arguments are only put to float registers
-    fregisters[FRegisters::FACCUM] = std::cos(fregisters[cur_instr->r]);
+    *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::FACCUM)) =
+        std::cos(*ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)));
     NEXT();
 pow:  // arguments are only put to float registers
-    fregisters[FRegisters::FACCUM] = std::pow(fregisters[cur_instr->r], fregisters[cur_instr->GetR2()]);
+    *ToNativePtr<VMFReg>(frame->GetRegPtr(Registers::FACCUM)) =
+        std::pow(*ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)),
+                 *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->GetR2())));
     NEXT();
 load:
-    registers[cur_instr->r] = vm_file_->GetConst<int>(cur_instr->imm);
+    *ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->r)) = vm_file_->GetConst<int>(cur_instr->imm);
     NEXT();
 move:
-    registers[cur_instr->r] = registers[cur_instr->GetR2()];
+    *ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->r)) = *ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->GetR2()));
     NEXT();
 fload:
-    fregisters[cur_instr->r] = vm_file_->GetConst<double>(cur_instr->imm);
+    *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)) = vm_file_->GetConst<double>(cur_instr->imm);
     NEXT();
 fmove:
-    fregisters[cur_instr->r] = fregisters[cur_instr->GetR2()];
+    *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->r)) = *ToNativePtr<VMFReg>(frame->GetRegPtr(cur_instr->GetR2()));
     NEXT();
 }
 

@@ -89,6 +89,12 @@ constexpr T *ToNativePtr(uintptr_t ptr)
     return reinterpret_cast<T *>(ptr);
 }
 
+template <typename T>
+constexpr T *ToNativePtr(void *ptr)
+{
+    return reinterpret_cast<T *>(ptr);
+}
+
 inline void *ToVoidPtr(uintptr_t ptr)
 {
     return reinterpret_cast<void *>(ptr);
