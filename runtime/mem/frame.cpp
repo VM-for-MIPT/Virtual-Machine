@@ -3,7 +3,7 @@
 namespace vm::mem {
 Frame::Frame(size_t size)
 {
-    uint8_t *mem = new uint8_t[size];  // TODO(Mirageinvo): allocator alloc
+    uint8_t *mem = new uint8_t[size];
     assert(mem != nullptr);
     start_ = ToUintPtr<uint8_t>(mem);
     cur_ = start_ + CalculateBytesForRegisters();
