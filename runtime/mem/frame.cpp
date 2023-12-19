@@ -22,15 +22,16 @@ Frame *Frame::GetCurrent()
 }
 
 /* static */
-void Frame::CreateNew()
+Frame *Frame::CreateNew()
 {
     Frame *new_frame = new Frame();
     frames_.push_back(new_frame);
     instance_ = new_frame;
+    return instance_;
 }
 
 /* static */
-void Frame::DeleteLast()
+Frame *Frame::DeleteLast()
 {
     delete instance_;
     frames_.pop_back();
@@ -57,12 +58,22 @@ void *Frame::GetRegPtr(size_t reg_id)
     return ToVoidPtr(start_ + (reg_id * sizeof(int64_t)));
 }
 
+void *Frame::GetRawMem()
+{
+    return ToVoidPtr(start_);
+}
+
 void *Frame::GetFreeMemPtr(size_t size)
 {
     void *mem = ToVoidPtr(cur_);
     cur_ += size;
     assert(cur_ <= end_);
     return mem;
+}
+
+void Frame::SetUpForCall(size_t num_of_args, int64_t jump_offset, int64_t pc, void *prev_fr_mem)
+{
+    std::memcpy(ToVoidPtr(start_), prev_fr_mem, num_of_args * sizeof(VMReg));
 }
 
 constexpr size_t Frame::CalculateBytesForRegisters() const

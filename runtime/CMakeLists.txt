@@ -1,4 +1,5 @@
 set(SOURCES
+    array.cpp
     decoder.cpp
     interpreter.cpp
     mem/frame.cpp

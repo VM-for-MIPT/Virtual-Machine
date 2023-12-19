@@ -5,14 +5,14 @@ Array::Array() = default;
 Array::~Array() = default;
 
 /* static */
-Array* Array::CreateArray(void* mem, size_t size)
+Array *Array::CreateArray(void *mem, size_t size)
 {
-    Array* arr = new (mem) Array;
+    Array *arr = new Array(mem, size);
     return arr;
 }
 
 /* static */
-static bool Array::Destroy(Array *array)
+bool Array::Destroy(Array *array)
 {
     assert(array != nullptr);
     delete array;
@@ -24,13 +24,15 @@ size_t Array::GetOffsetByIdx(int idx)
     return idx * KlassWord_;
 }
 
-int Array::GetValueByIdx(int idx) {
-  return *(ptr_ + GetOffsetByIdx(idx));
+int Array::GetValueByIdx(int idx)
+{
+    return *ToNativePtr<int64_t>(ToUintPtr(ptr_) + GetOffsetByIdx(idx));
 }
 
-int Array::SetValueByIdx(int value, int idx) {
-  auto idx_pointer = ptr_ + GetOffsetByIdx(idx);
-  *idx_pointer = value;
+void Array::SetValueByIdx(int value, int idx)
+{
+    auto idx_pointer = ToUintPtr(ptr_) + GetOffsetByIdx(idx);
+    *ToNativePtr<int64_t>(idx_pointer) = value;
 }
 
 }  // namespace vm
