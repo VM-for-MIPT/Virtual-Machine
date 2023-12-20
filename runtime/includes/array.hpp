@@ -5,31 +5,26 @@
 #include <cassert>
 #include "macros.hpp"
 #include "utils.hpp"
+#include "object_header.hpp"
 
 namespace vm {
-class Array final {
+class Array final : ObjectHeader {
 public:
     NO_COPY_SEMANTIC(Array);
     NO_MOVE_SEMANTIC(Array);
 
-    [[nodiscard]] static Array *CreateArray(void *mem, size_t size);
+    [[nodiscard]] static Array *CreateArray(void *mem, size_t length, Types type);
     static bool Destroy(Array *array);
+    static size_t ComputeSize(size_t length, Types type);
 
-    int GetValueByIdx(int idx);
-    void SetValueByIdx(int value, int idx);
+    int64_t GetValueByIdx(size_t idx);
+    void SetValueByIdx(int64_t value, size_t idx);
+    static int64_t GetElementSize(Types type);
+    int64_t GetElementSize();
 
 private:
-    void *ptr_;
-    uint32_t MarkWord_;   // for the future
-    uint32_t KlassWord_;  // what type
+    size_t GetOffsetByIdx(size_t idx);
 
-    size_t GetOffsetByIdx(int idx);
-
-    Array(void *mem, size_t size)
-    {
-        MarkWord_ = size;
-        ptr_ = mem;
-    };
     Array();
     ~Array();
 };

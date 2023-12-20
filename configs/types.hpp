@@ -4,7 +4,7 @@
 #include <cstdint>
 
 namespace vm {
-enum class Types : uint8_t { INT = 0, DOUBLE = 1, STRING = 2, CHAR = 3 };
+enum Types : uint8_t { INT = 0, DOUBLE = 1, STRING = 2, CHAR = 3 };
 
 using VMByte = uint8_t;
 using VMReg = int64_t;
