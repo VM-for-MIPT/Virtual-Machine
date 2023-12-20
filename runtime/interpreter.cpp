@@ -47,11 +47,11 @@ void Interpreter::Run(size_t entrypoint)
     assert(frame != nullptr);
     assert(Frame::GetFrames()->size() != 0);
     VMReg pc = entrypoint;
-    static void *dispatch_table[] = {
-        &&exit, &&iadd, &&isub, &&imul,  &&idiv,  &&fadd,  &&fsub,   &&fmul,      &&fdiv,      &&and_,
-        &&or_,  &&xor_, &&eq,   &&ne,    &&lt,    &&le,    &&gt,     &&ge,        &&feq,       &&fne,
-        &&flt,  &&fle,  &&fgt,  &&fge,   &&iscan, &&fscan, &&iprint, &&fprint,    &&sin,       &&cos,
-        &&pow,  &&load, &&move, &&fload, &&fmove, &&call,  &&ret,    &&newarrint, &&strarrint, &&ldarrint};
+    static void *dispatch_table[] = {&&exit,  &&iadd,  &&isub,   &&imul,   &&idiv, &&fadd,   &&fsub,   &&fmul,
+                                     &&fdiv,  &&and_,  &&or_,    &&xor_,   &&eq,   &&ne,     &&lt,     &&le,
+                                     &&gt,    &&ge,    &&feq,    &&fne,    &&flt,  &&fle,    &&fgt,    &&fge,
+                                     &&iscan, &&fscan, &&iprint, &&fprint, &&sin,  &&cos,    &&pow,    &&load,
+                                     &&move,  &&fload, &&fmove,  &&call,   &&ret,  &&newarr, &&strarr, &&ldarr};
 
     Instruction *cur_instr = new Instruction;
     *cur_instr = decoder_->Decode(FetchNext(code, pc));
@@ -210,7 +210,7 @@ call:
     frame = Frame::CreateNew();
     frame->SetUpForCall(num_of_args, jump_offset, pc, prev_fr_mem);
     // changing pc
-    pc = pc + jump_offset - 4;  // -4 because NEXT() adds 4
+    pc = pc + jump_offset - 4;  // (-4) because NEXT() adds 4
 
     NEXT();
 ret:
@@ -222,16 +222,20 @@ ret:
     // saving result to the current accum
     *ToNativePtr<VMReg>(frame->GetRegPtr(Registers::ACCUM)) = *ToNativePtr<VMReg>(&result);
     NEXT();
-newarrint:
-    auto arr_ptr = Frame::GetCurrent()->GetFreeMemPtr(vm_file_->GetConst<VMReg>(cur_instr->imm));
-    auto arr = vm::Array::CreateArray(arr_ptr, sizeof(VMReg));
-    *ToNativePtr<VMReg>(frame->GetRegPtr(Registers::ACCUM)) = reinterpret_cast<VMReg>(&arr_ptr);
+newarr:
+    Types type = *ToNativePtr<Types>(frame->GetRegPtr(cur_instr->GetR2()));
+    size_t size = Array::ComputeSize(*ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->r)), type);
+    void *arr_ptr = Frame::GetCurrent()->GetFreeMemPtr(size);
+    Array *arr = Array::CreateArray(arr_ptr, size, type);
+    *ToNativePtr<VMReg>(frame->GetRegPtr(Registers::ACCUM)) = *ToNativePtr<VMReg>(arr);
     NEXT();
-strarrint:
+strarr:
+    arr = ToNativePtr<Array>(frame->GetRegPtr(Registers::ACCUM));
     arr->SetValueByIdx(*ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->r)),
                        *ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->GetR2())));
     NEXT();
-ldarrint:
+ldarr:
+    arr = ToNativePtr<Array>(frame->GetRegPtr(Registers::ACCUM));
     *ToNativePtr<VMReg>(frame->GetRegPtr(Registers::ACCUM)) =
         arr->GetValueByIdx(*ToNativePtr<VMReg>(frame->GetRegPtr(cur_instr->r)));
     NEXT();

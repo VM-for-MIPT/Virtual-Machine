@@ -244,3 +244,24 @@ RET:
   info: "Returning to previous frame from func call"
   opcode: 36
   fields_shifts:
+
+NEWARR:
+  info: "Creating new array"
+  opcode: 37
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+STRARR:
+  info: "Storing value to an array"
+  opcode: 38
+  fields_shifts:
+    r1: 8
+    r2: 16
+
+
+LDARR:
+  info: "Getting value from an array"
+  opcode: 39
+  fields_shifts:
+    r1: 8
